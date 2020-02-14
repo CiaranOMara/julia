@@ -32,11 +32,7 @@ function find_curl()
         return joinpath(get(ENV, "SYSTEMROOT", "C:\\Windows"), "System32\\curl.exe")
     end
 
-    if !Sys.iswindows() && Sys.which("curl") !== nothing
-        return "curl"
-    end
-
-    return nothing
+    return Sys.which("curl") #Note: returns nothing if unsuccessful.
 end
 
 function download_curl(curl_exe::AbstractString, url::AbstractString, filename::AbstractString)
