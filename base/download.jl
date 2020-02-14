@@ -25,14 +25,18 @@ end
 
 function find_curl()
     if Sys.isapple() && Sys.isexecutable("/usr/bin/curl")
-        "/usr/bin/curl"
-    elseif Sys.iswindows() && Sys.isexecutable(joinpath(get(ENV, "SYSTEMROOT", "C:\\Windows"), "System32\\curl.exe"))
-        joinpath(get(ENV, "SYSTEMROOT", "C:\\Windows"), "System32\\curl.exe")
-    elseif !Sys.iswindows() && Sys.which("curl") !== nothing
-        "curl"
-    else
-        nothing
+        return "/usr/bin/curl"
     end
+
+    if Sys.iswindows() && Sys.isexecutable(joinpath(get(ENV, "SYSTEMROOT", "C:\\Windows"), "System32\\curl.exe"))
+        return joinpath(get(ENV, "SYSTEMROOT", "C:\\Windows"), "System32\\curl.exe")
+    end
+
+    if !Sys.iswindows() && Sys.which("curl") !== nothing
+        return "curl"
+    end
+
+    return nothing
 end
 
 function download_curl(curl_exe::AbstractString, url::AbstractString, filename::AbstractString)
