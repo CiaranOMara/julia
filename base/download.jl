@@ -58,23 +58,32 @@ end
 function download(url::AbstractString, filename::AbstractString)
     url = download_url(url)
     curl_exe = find_curl()
+
     if curl_exe !== nothing
         return download_curl(curl_exe, url, filename)
-    elseif Sys.iswindows()
+    end
+
+    if Sys.iswindows()
         return download_powershell(url, filename)
-    elseif Sys.which("wget") !== nothing
+    end
+
+    if Sys.which("wget") !== nothing
         try
             run(`wget -O $filename $url`)
         catch
             rm(filename, force=true)  # wget always creates a file
             rethrow()
         end
-    elseif Sys.which("fetch") !== nothing
-        run(`fetch -f $filename $url`)
-    else
-        error("No download agent available; install curl, wget, or fetch.")
+        return filename
     end
-    return filename
+
+    if Sys.which("fetch") !== nothing
+        run(`fetch -f $filename $url`)
+        return filename
+    end
+
+    error("No download agent available; install curl, wget, or fetch.")
+
 end
 
 function download(url::AbstractString)
